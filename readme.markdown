@@ -84,9 +84,9 @@ platform that supports the Lua programming language and network sockets.
 <a name="feedback" />
 Feedback and issues
 -------------------
-Enhancement requests and problems are tracking on GitHub ...
+Tracking is managed via GitHub ...
 
-- [Enhancements and issue tracking](https://github.com/geekscape/mqtt_lua/issues)
+- [Enhancements requests and issue tracking](https://github.com/geekscape/mqtt_lua/issues)
 
 <a name="installation" />
 Installation
@@ -135,7 +135,7 @@ subscribes to the topic "test/2".  The command exits when the message
       -p,--port   (default 1883)       MQTT server port number
       <host>      (default localhost)  MQTT server hostname
 
-#### mqtt\_publish: Publish a single message to a specific topic
+#### mqtt\_publish: Publish a single message to a specified topic
 
 This command publishes a single message and then exits.
 
@@ -241,7 +241,7 @@ The following statement enables debug console logging for diagnosis.
 
 #### MQTT.client.create(): Create an MQTT client instance
 
-Create an MQTT client that will be connected to a specific host.
+Create an MQTT client that will be connected to the specified host.
 
       mqtt_client = MQTT.client.create(hostname, port, callback)
 
@@ -299,7 +299,7 @@ Transmit an MQTT disconnect message to the server.
 
 #### MQTT.client:publish(): Transmit MQTT publish message
 
-Transmit a message on a given topic.
+Transmit a message on a specified topic.
 
       mqtt_client:publish(topic, payload)
 
