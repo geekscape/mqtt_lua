@@ -1,388 +1,118 @@
-<h1>Lua MQTT client library (version 0.0 2011-07-28)</h1>
-
-<h2>Contents</h2>
-
-<ul>
-<li><a href="#introduction">Introduction</a></li>
-<li><a href="#restrictions">Protocol implementation and restrictions</a></li>
-<li><a href="#download">Download</a></li>
-<li><a href="#feedback">Feedback and issues</a></li>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#usage">Usage</a></li>
-<li><a href="#example">Example code</a></li>
-<li><a href="#api">Library API</a></li>
-<li><a href="#problems">Known problems</a></li>
-</ul>
-
-<p><a name="introduction" /></p>
-
-<h2>Introduction</h2>
-
-<p>This project provides a client-side (only) implementation of the
-<a href="http://mqtt.org">MQTT protocol</a>,
-plus command-line utilities for publishing and subscribing to MQTT topics.
-Typically, one or more MQTT servers, such as
-<a href="http://mosquitto.org">mosquitto</a> or
-<a href="http://www.alphaworks.ibm.com/tech/rsmb">rsmb</a>
-will be running on host systems, with which the Lua MQTT client can interact.</p>
-
-<p>MQTT stands for "Message Queue Telemetry Transport", a protocol authored by
-<a href="http://wikipedia.org/wiki/Andy_Stanford-Clark">Dr. Andy Stanford-Clark</a>
-and Arlen Nipper.
-The protocol is a message-based, publish/subscribe transport layer,
-which is optimized for simple telemetry applications running on small
-micro-controllers, such as an <a href="http://arduino.cc">Arduino</a>,
-over low-bandwidth connections.
-<a href="http://mqtt.org/software">MQTT libraries exist</a>
-for most popular programming languages, so you can utilize MQTT
-on whatever server or device that you require.</p>
-
-<p>The Lua MQTT client library implements the client-side subset of the
-<a href="https://www.ibm.com/developerworks/webservices/library/ws-mqtt">MQTT protocol specification 3.1</a>.</p>
-
-<p><img src="https://github.com/geekscape/mqtt_lua/raw/master/images/lua_mqtt_overview.jpg" alt="Lua MQTT overview" title="" /></p>
-
-<p>A good use-case for this library is running on constrained systems, such as
-<a href="http://openwrt.org">OpenWRT</a>,
-and acting as a gateway between non-MQTT clients and MQTT servers.
-The <a href="https://sites.google.com/site/aikoplatform">Aiko Platform</a>
-uses this approach for aggregating non-TCP/IP devices and forwarding
-messages onto TCP/IP networks.
-An advantage of using Lua is that only a text editor is required for rapid
-development of simple MQTT client applications on platforms such as OpenWRT.
-In constrast, working with the C programming language would comparatively
-require more effort, due to requiring a cross-platform development environment.</p>
-
-<p>The Lua MQTT client library also runs (unmodified) on a Sony PlayStation
-Portable using the
-<a href="http://en.wikipedia.org/wiki/Lua_Player_HM">Lua Player HM</a>
-<em>(which requires your PSP to be able to run unsigned executables).</em></p>
-
-<p><img src="https://github.com/geekscape/mqtt_lua/raw/master/images/playstation_portable.jpg" alt="PlayStation Portable" title="" /></p>
-
-<p><a name="restrictions" /></p>
-
-<h2>Protocol implementation and restrictions</h2>
-
-<ul>
-<li>Always assumes MQTT connection "clean session" enabled.</li>
-<li>Supports connection last will and testament message.</li>
-<li>Does not support connection username and password.</li>
-<li>Fixed message header byte 1, only implements the "message type".</li>
-<li>Only supports QOS (Quality Of Service) level 0.</li>
-<li>Maximum payload length is 127 bytes (easily increased).</li>
-<li>Publish message doesn't support "message identifier".</li>
-<li>Subscribe acknowledgement messages don't check granted QOS level.</li>
-<li>Outstanding subscribe acknowledgement messages aren't escalated.</li>
-<li>Works on the Sony PlayStation Portable, using
-<a href="http://en.wikipedia.org/wiki/Lua_Player_HM">Lua Player HM</a>.</li>
-</ul>
-
-<p><a name="download" /></p>
-
-<h2>Download</h2>
-
-<p>The Lua MQTT client library is cross-platform and should work on any
-platform that supports the Lua programming language and network sockets.</p>
-
-<ul>
-<li><a href="https://github.com/geekscape/mqtt_lua/archives/master">Download Lua MQTT client library</a></li>
-</ul>
-
-<p><a name="feedback" /></p>
-
-<h2>Feedback and issues</h2>
-
-<p>Enhancement requests and problems are tracking on GitHub ...</p>
-
-<ul>
-<li><a href="https://github.com/geekscape/mqtt_lua/issues">Enhancements and issue tracking</a></li>
-</ul>
-
-<p><a name="installation" /></p>
-
-<h2>Installation</h2>
-
-<p>You may choose to install an MQTT server either on the same or a different
-system from the Lua MQTT client library, depending upon your deployment
-scenario.</p>
-
-<p>Prerequisites ...</p>
-
-<ul>
-<li>Install <a href="http://mosquitto.org/download">Mosquitto MQTT server</a>
-or any other MQTT server</li>
-<li>Install <a href="http://www.lua.org/download.html">Lua programming language</a></li>
-<li>Install <a href="http://luarocks.org/en/Download">LuaRocks package manager</a></li>
-<li>Install <a href="http://w3.impa.br/~diego/software/luasocket">LuaSocket</a></li>
-</ul>
-
-<p>On Linux, Lua and LuaRocks can be installed via your Linux distribution
-package manager.  On Mac OS X, Lua and LuaRocks can be installed via
-Darwin ports.  After that, LuaSocket can be installed via LuaRocks.</p>
-
-<p>Lua MQTT client library as a LuaRock ...</p>
-
-<ul>
-<li>luarocks --from=<em>server</em> install mqtt</li>
-</ul>
-
-<p>Lua MQTT client library (source code) from GitHub ...</p>
-
-<ul>
-<li>TODO</li>
-</ul>
-
-<p><a name="usage" /></p>
-
-<h2>Usage</h2>
-
-<p>The Lua MQTT client library comes with three command line utilites,
-which are useful for testing the library and acting as example code.</p>
-
-<h4>mqtt_test: Test publish and receive messages on different topics</h4>
-
-<p>This command periodically publishes a message on topic "test/1" and
-subscribes to the topic "test/2".  The command exits when the message
-"quit" is published on topic "test/2".</p>
-
-<pre><code>  cd $(LUA_MQTT_LIB)        // where Lua MQTT library script is installed
-  ./mqtt_test -d localhost  // Assume MQTT server is running on "localhost"
-
-  -d,--debug                       Verbose console logging
-  -i,--id     (default MQTT test)  MQTT client identifier
-  -p,--port   (default 1883)       MQTT server port number
-  &lt;host&gt;      (default localhost)  MQTT server hostname
-</code></pre>
-
-<h4>mqtt_publish: Publish a single message to a specific topic</h4>
-
-<p>This command publishes a single message and then exits.</p>
-
-<pre><code>  ./mqtt_publish -d -t test/1 -m "Test message"
-</code></pre>
-
-<p>Only the <em>--topic</em> and <em>--message</em> parameters are required.</p>
-
-<pre><code>  -d,--debug                               Verbose console logging
-  -h,--host         (default localhost)    MQTT server hostname
-  -i,--id           (default MQTT client)  MQTT client identifier
-  -m,--message      (string)               Message to be published
-  -p,--port         (default 1883)         MQTT server port number
-  -t,--topic        (string)               Topic on which to publish
-  -w,--will_message                        Last will and testament message
-  -w,--will_qos     (default 0)            Last will and testament QOS
-  -w,--will_retain  (default 0)            Last will and testament retention
-  -w,--will_topic                          Last will and testament topic
-</code></pre>
-
-<h4>mqtt_subscribe: Subscribe to a topic</h4>
-
-<p>This command subscribes to a topic and listens indefinitely for messages.
-Use ^C (or similar) to stop execution.</p>
-
-<pre><code>  ./mqtt_subscribe -d -t test/1
-</code></pre>
-
-<p>Only the <em>--topic</em> parameter is required.</p>
-
-<pre><code>  -d,--debug                               Verbose console logging
-  -h,--host         (default localhost)    MQTT server hostname
-  -i,--id           (default MQTT client)  MQTT client identifier
-  -k,--keepalive    (default 60)           Send MQTT PING period (seconds)
-  -p,--port         (default 1883)         MQTT server port number
-  -t,--topic        (string)               Subscription topic
-  -w,--will_message                        Last will and testament message
-  -w,--will_qos     (default 0)            Last will and testament QOS
-  -w,--will_retain  (default 0)            Last will and testament retention
-  -w,--will_topic                          Last will and testament topic
-</code></pre>
-
-<p><a name="example" /></p>
-
-<h2>Example code</h2>
-
-<p>The complete functioning code can be viewed here ...
-<a href="https://github.com/geekscape/mqtt_lua/blob/master/lua/mqtt_test.lua">mqtt_lua/lua/mqtt_test.lua</a></p>
-
-<pre><code>-- Define a function which is called by mqtt_client:handler(),
--- whenever messages are received on the subscribed topics
-
-  function callback(topic, message)
-    print("Received: " .. topic .. ": " .. message)
-    if (message == "quit") then running = false end
-  end
-
--- Create an MQTT client instance, connect to the MQTT server and
--- subscribe to the topic called "test/2"
-
-  MQTT = require("mqtt_library")
-  MQTT.Utility.set_debug(true)
-  mqtt_client = MQTT.client.create("localhost", nil, callback)
-  mqtt_client:connect("lua mqtt client"))
-  mqtt_client:subscribe({"test/2"})
-
--- Continously invoke mqtt_client:handler() to process the MQTT protocol and
--- handle any received messages.  Also, publish a message on topic "test/1"
-
-  running = true
-
-  while (running) do
-    mqtt_client:handler()
-    mqtt_client:publish("test/1", "test message")
-    socket.sleep(1.0)  -- seconds
-  end
-
--- Clean-up by unsubscribing from the topic and closing the MQTT connection
-
-  mqtt_client:unsubscribe({"test/2"})
-  mqtt_client:destroy()
-</code></pre>
-
-<p>There are also a number of Lua MQTT client examples in the <em>example/</em> directory.
-They can be run from the <em>lua/</em> parent directory, as follow ...</p>
-
-<pre><code>  cd mqtt_client/lua
-  example/example_00.lua
-</code></pre>
-
-<p><a name="api" /></p>
-
-<h2>MQTT client Library API</h2>
-
-<p>Once the MQTT client library has been included (via <em>require</em>), one or more
-MQTT server connections can be created.  Using a server connection, the client
-may then publish messages directly on a specified topic.  Or, subscribe to one
-or more topics, where received messages are passed to a callback function
-(defined when creating an MQTT client instance).  Finally, the client can
-unsubscribe from one or more topics and disconnect from the MQTT server.</p>
-
-<p>Use the Lua <em>require</em> statement to load the MQTT client library ...</p>
-
-<pre><code>  MQTT = require("mqtt_library")
-</code></pre>
-
-<h4>MQTT.Utility.set_debug(): Library debug console logging</h4>
-
-<p>The following statement enables debug console logging for diagnosis.</p>
-
-<pre><code>  MQTT.Utility.set_debug(true)
-</code></pre>
-
-<h4>MQTT.client.create(): Create an MQTT client instance</h4>
-
-<p>Create an MQTT client that will be connected to a specific host.</p>
-
-<pre><code>  mqtt_client = MQTT.client.create(hostname, port, callback)
-</code></pre>
-
-<p>The <em>hostname</em> must be provided, but both the <em>port</em> and <em>callback function</em>
-parameters are optional.  This function returns an MQTT client instance
-that must be used for all subsequent MQTT operations for that server connection.</p>
-
-<pre><code>  hostname string:   Host name or address of the MQTT broker
-  port     integer:  Port number of the MQTT broker (default: 1883)
-  callback function: Invoked when subscribed topic messages received
-</code></pre>
-
-<p>The <em>callback function</em> is defined as follows ...</p>
-
-<pre><code>  function callback(topic, payload)
-  -- application specific code
-  end
-
-  topic   -- string: Topic for the received message
-  payload -- string: Message data
-</code></pre>
-
-<h4>MQTT.client:destroy(): Destroy an MQTT client instance</h4>
-
-<p>When finished with a server connection, this statement cleans-up all resources
-allocated by the client.</p>
-
-<pre><code>  mqtt_client:destroy()
-</code></pre>
-
-<h4>MQTT.client:connect(): Make a connection to an MQTT server</h4>
-
-<p>Before messages can be transmitted, the MQTT client must connect to the server.</p>
-
-<pre><code>  mqtt_client:connect(identifier)
-</code></pre>
-
-<p>Each individual client connection must use a unique identifier.
-Only the <em>identifier</em> parameter is required, the remaining parameters
-are optional.</p>
-
-<pre><code>  mqtt_client:connect(identifier, will_topic, will_qos, will_retain, will_message)
-</code></pre>
-
-<p>MQTT also provides a "last will and testament" for clients, which is a message
-automatically sent by the server on behalf of the client, should the connection
-fail.</p>
-
-<pre><code>  identifier   -- string: MQTT client identifier (maximum 23 characters)
-  will_topic   -- string: Last will and testament topic
-  will_qos     -- byte:   Last will and testament Quality Of Service
-  will_retain  -- byte:   Last will and testament retention status
-  will_message -- string: Last will and testament message
-</code></pre>
-
-<h4>MQTT.client:disconnect(): Transmit MQTT Disconnect message</h4>
-
-<p>Transmit an MQTT disconnect message to the server.</p>
-
-<pre><code>  mqtt_client:disconnect()
-</code></pre>
-
-<h4>MQTT.client:publish(): Transmit MQTT publish message</h4>
-
-<p>Transmit a message on a given topic.</p>
-
-<pre><code>  mqtt_client:publish(topic, payload)
-
-  topic   -- string: Topic for the published message
-  payload -- string: Message data
-</code></pre>
-
-<h4>MQTT.client:subscribe(): Transmit MQTT Subscribe message</h4>
-
-<p>Subscribe to one or more topics.  Whenever a message is published to one of
-those topics, the callback function (defined above) will be invoked.</p>
-
-<pre><code>  mqtt_client:subscribe(topics)
-
-  topics -- table of strings, e.g. { "topic1", "topic2" }
-</code></pre>
-
-<h4>MQTT.client:handler(): Handle received messages, maintain keep-alive messages</h4>
-
-<p>The <em>handler()</em> function must be called periodically to service incoming
-messages and to ensure that keep-alive messages (PING) are being sent
-when required.</p>
-
-<p>The default <em>KEEP_ALIVE_TIME</em> is 60 seconds, therefore <em>handler()</em> must be
-invoked more often than once per minute.</p>
-
-<p>Should any messages be received on the subscribed topics, then <em>handler()</em>
-will invoke the callback function (defined above).</p>
-
-<pre><code>  mqtt_client:handler()
-</code></pre>
-
-<h4>MQTT.client:unsubscribe(): Transmit MQTT Unsubscribe message</h4>
-
-<p>Unsubscribe from one or more topics, so that messages published to those
-topics are no longer received.</p>
-
-<pre><code>  topics -- table of strings, e.g. { "topic1", "topic2" }
-</code></pre>
-
-<p><a name="problems" /></p>
-
-<h2>Known problems</h2>
-
-<ul>
-<li>Occasional "MQTT.client:handler(): Message length mismatch" errors,
-particularly when subscribed topics are transmitting many messages.</li>
-</ul>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  	<title>geekscape/mqtt_lua @ github</title>
+	
+  	<style type="text/css">
+  		body {
+    		margin-top: 1.0em;
+    		background-color: #68b0e8;
+  		  font-family: "Helvetica,Arial,FreeSans";
+    		color: #000000;
+      }
+      #container {
+        margin: 0 auto;
+        width: 700px;
+      }
+  		h1 { font-size: 3.8em; color: #974f17; margin-bottom: 3px; }
+  		h1 .small { font-size: 0.4em; }
+  		h1 a { text-decoration: none }
+  		h2 { font-size: 1.5em; color: #974f17; }
+      h3 { text-align: center; color: #974f17; }
+      a { color: #974f17; }
+      .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+      .download { float: right; }
+  		pre { background: #000; color: #fff; padding: 15px;}
+      hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+      .footer { text-align:center; padding-top:30px; font-style: italic; }
+  	</style>
+  </head>
+
+  <body>
+    <a href="http://github.com/geekscape/mqtt_lua"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+    <div id="container">
+    <div class="download">
+      <a href="http://github.com/geekscape/mqtt_lua/zipball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
+      <a href="http://github.com/geekscape/mqtt_lua/tarball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+    </div>
+
+    <h1>
+      <a href="http://github.com/geekscape/mqtt_lua">mqtt_lua</a>
+      <span class="small">
+        by <a href="http://github.com/geekscape">geekscape</a>
+      </span>
+    </h1>
+
+    <div class="description">
+      <p>
+        Lua client library for the MQTT protocol.
+      </p>
+      <p>
+        Resources
+        <li>
+          <ul>
+            <a href="http://github.com/geekscape/mqtt_lua">Source code and documentation</a>
+          </ul>
+          <ul>
+            <a href="https://sites.google.com/site/aikoplatform">Aiko Platform web-site</a>
+          </ul>
+        </li>
+      </p>
+    </div>
+
+    <h2>Dependencies</h2>
+      <p>None.</p>
+
+    <h2>Install</h2>
+      <p>
+        <li>
+          <ul><a href="file:///Users/andyg/Documents/play/lua/mqtt_lua/readme.html#installation">Instructions</a></ul>
+        </li>
+      </p>
+
+    <h2>License</h2>
+      <p>GPLv3</p>
+
+    <h2>Author(s)</h2>
+      <p>Andy Gelm</p>
+
+    <h2>Contact</h2>
+      <p>Andy Gelme (andyg at geekscape dot org)<br/></p>
+
+    <h2>Download</h2>
+      <p>
+        You can download this project in either
+        <a href="http://github.com/geekscape/mqtt_lua/zipball/master">zip</a> or
+        <a href="http://github.com/geekscape/mqtt_lua/tarball/master">tar</a> formats.
+      </p>
+      <p>
+        You can also clone the project with <a href="http://git-scm.com">Git</a>
+        by running:
+        <pre>$ git clone git://github.com/geekscape/mqtt_lua</pre>
+      </p>
+
+      <div class="footer">
+        get the source code on GitHub :
+        <a href="http://github.com/geekscape/mqtt_lua">geekscape/mqtt_lua</a>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+      try {
+        var pageTracker = _gat._getTracker("UA-597568-1");
+        pageTracker._trackPageview();
+      } catch(err) {}
+    </script>
+  </body>
+</html>
