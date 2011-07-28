@@ -38,7 +38,7 @@ on whatever server or device that you require.
 The Lua MQTT client library implements the client-side subset of the
 [MQTT protocol specification 3.1](https://www.ibm.com/developerworks/webservices/library/ws-mqtt).
 
-![Lua MQTT overview](images/lua_mqtt_overview.jpg)
+![Lua MQTT overview](https://github.com/geekscape/mqtt_client_lua/raw/master/images/lua_mqtt_overview.jpg)
 
 A good use-case for this library is running on constrained systems, such as
 [OpenWRT](http://openwrt.org),
@@ -56,7 +56,7 @@ Portable using the
 [Lua Player HM](http://en.wikipedia.org/wiki/Lua_Player_HM)
 _(which requires your PSP to be able to run unsigned executables)._
 
-![PlayStation Portable](images/playstation_portable.jpg)
+![PlayStation Portable](https://github.com/geekscape/mqtt_client_lua/raw/master/images/playstation_portable.jpg)
 
 <a name="restrictions" />
 Protocol implementation and restrictions
