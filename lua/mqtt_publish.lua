@@ -4,7 +4,7 @@
 -- ~~~~~~~~~~~~~~~~
 -- Please do not remove the following notices.
 -- Copyright (c) 2011 by Geekscape Pty. Ltd.
--- Documentation: http://http://geekscape.github.com/lua_mqtt_client
+-- Documentation: http://http://geekscape.github.com/mqtt_lua
 -- License: GPLv3 http://geekscape.org/static/aiko_license.html
 -- Version: 0.0 2011-07-28
 --

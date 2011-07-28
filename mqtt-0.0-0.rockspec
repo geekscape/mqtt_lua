@@ -1,8 +1,8 @@
-package = "mqtt_client"
+package = "mqtt"
 version = "0.0-0"
 
 source = {
-  url = "http://github.com/downloads/geekscape/lua_mqtt_client/lua_mqtt_client-0.0.tar.gz"
+  url = "http://github.com/downloads/geekscape/mqtt_lua/mqtt_lua-0.0.tar.gz"
 }
 
 description = {
@@ -14,7 +14,7 @@ description = {
       https://www.ibm.com/developerworks/webservices/library/ws-mqtt
   ]],
 
-  homepage = "https://geekscape.github.com/lua_mqtt_client",
+  homepage = "https://geekscape.github.com/mqtt_lua",
   license = "GPLv3 or commercial",
   maintainer = "Andy Gelme (@geekscape)"
 }

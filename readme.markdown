@@ -38,7 +38,7 @@ on whatever server or device that you require.
 The Lua MQTT client library implements the client-side subset of the
 [MQTT protocol specification 3.1](https://www.ibm.com/developerworks/webservices/library/ws-mqtt).
 
-![Lua MQTT overview](https://github.com/geekscape/mqtt_client_lua/raw/master/images/lua_mqtt_overview.jpg)
+![Lua MQTT overview](https://github.com/geekscape/mqtt_lua/raw/master/images/lua_mqtt_overview.jpg)
 
 A good use-case for this library is running on constrained systems, such as
 [OpenWRT](http://openwrt.org),
@@ -56,7 +56,7 @@ Portable using the
 [Lua Player HM](http://en.wikipedia.org/wiki/Lua_Player_HM)
 _(which requires your PSP to be able to run unsigned executables)._
 
-![PlayStation Portable](https://github.com/geekscape/mqtt_client_lua/raw/master/images/playstation_portable.jpg)
+![PlayStation Portable](https://github.com/geekscape/mqtt_lua/raw/master/images/playstation_portable.jpg)
 
 <a name="restrictions" />
 Protocol implementation and restrictions
@@ -79,14 +79,14 @@ Download
 The Lua MQTT client library is cross-platform and should work on any
 platform that supports the Lua programming language and network sockets.
 
-- [Download Lua MQTT client library](https://github.com/geekscape/mqtt_client_lua/archives/master)
+- [Download Lua MQTT client library](https://github.com/geekscape/mqtt_lua/archives/master)
 
 <a name="feedback" />
 Feedback and issues
 -------------------
 Enhancement requests and problems are tracking on GitHub ...
 
-- [Enhancements and issue tracking](https://github.com/geekscape/mqtt_client_lua/issues)
+- [Enhancements and issue tracking](https://github.com/geekscape/mqtt_lua/issues)
 
 <a name="installation" />
 Installation
@@ -109,7 +109,7 @@ Darwin ports.  After that, LuaSocket can be installed via LuaRocks.
 
 Lua MQTT client library as a LuaRock ...
 
-* luarocks --from=_server_ install mqtt_client
+* luarocks --from=_server_ install mqtt
 
 Lua MQTT client library (source code) from GitHub ...
 
@@ -178,7 +178,7 @@ Only the _--topic_ parameter is required.
 Example code
 ------------
 The complete functioning code can be viewed here ...
-[lua/mqtt\_test.lua](HTTP://GITHUB.COM/FILL_ME_IN)
+[mqtt_lua/lua/mqtt\_test.lua](https://github.com/geekscape/mqtt_lua/blob/master/lua/mqtt_test.lua)
 
     -- Define a function which is called by mqtt_client:handler(),
     -- whenever messages are received on the subscribed topics

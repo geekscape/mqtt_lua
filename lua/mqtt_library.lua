@@ -7,11 +7,11 @@
 --
 -- Documentation
 -- ~~~~~~~~~~~~~
--- Lua MQTT client web-site
---   http://http://geekscape.github.com/lua_mqtt_client
+-- MQTT Lua web-site
+--   http://geekscape.github.com/mqtt_lua
 --
--- Lua MQTT client repository notes
---   https://github.com/geekscape/lua_mqtt_client/blob/master/readme.markdown
+-- MQTT Lua repository notes
+--   https://github.com/geekscape/mqtt_lua/blob/master/readme.markdown
 --
 -- Aiko Platform web-site
 --   https://sites.google.com/site/aikoplatform
