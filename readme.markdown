@@ -79,12 +79,14 @@ Download
 The Lua MQTT client library is cross-platform and should work on any
 platform that supports the Lua programming language and network sockets.
 
-* Link to: GitHub tgz
+- [Download Lua MQTT client library](https://github.com/geekscape/mqtt_client_lua/archives/master)
 
 <a name="feedback" />
 Feedback and issues
 -------------------
-* Link to: GitHub issue tracker
+Enhancement requests and problems are tracking on GitHub ...
+
+- [Enhancements and issue tracking](https://github.com/geekscape/mqtt_client_lua/issues)
 
 <a name="installation" />
 Installation
