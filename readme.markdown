@@ -1,6 +1,9 @@
 Lua MQTT client library (version 0.0 2011-07-28)
 =======================
 
+This project is part of the
+[Aiko Platform](https://sites.google.com/site/aikoplatform)
+
 Contents
 --------
 - [Introduction](#introduction)
