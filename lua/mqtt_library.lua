@@ -2,7 +2,7 @@
 -- ~~~~~~~~~~~~~~~~
 -- Please do not remove the following notices.
 -- Copyright (c) 2011 by Geekscape Pty. Ltd.
--- License: GPLv3 http://geekscape.org/static/aiko_license.html
+-- License: AGPLv3 http://geekscape.org/static/aiko_license.html
 -- Version: 0.0 2011-07-28
 --
 -- Documentation

@@ -15,7 +15,7 @@ description = {
   ]],
 
   homepage = "https://geekscape.github.com/mqtt_lua",
-  license = "GPLv3 or commercial",
+  license = "AGPLv3 or commercial",
   maintainer = "Andy Gelme (@geekscape)"
 }
 
