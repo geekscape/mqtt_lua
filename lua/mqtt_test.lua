@@ -10,8 +10,8 @@
 --
 -- Description
 -- ~~~~~~~~~~~
--- Repetitively publishes MQTT messages on the topic "test/1",
--- until the "quit" message is received on the topic "test/2".
+-- Repetitively publishes MQTT messages on the topic2,
+-- until the "quit" message is received on the topic1.
 --
 -- References
 -- ~~~~~~~~~~
@@ -50,6 +50,8 @@ local args = lapp [[
   -d,--debug                       Verbose console logging
   -i,--id     (default MQTT test)  MQTT client identifier
   -p,--port   (default 1883)       MQTT server port number
+  -s,--topic1  (default test/2)    Subscribe topic
+  -t,--topic2  (default test/1)    Publish topic
   <host>      (default localhost)  MQTT server hostname
 ]]
 
@@ -61,18 +63,18 @@ local mqtt_client = MQTT.client.create(args.host, args.port, callback)
 
 mqtt_client:connect(args.id)
 
-mqtt_client:publish("test/1", "*** Lua test A ***")
-mqtt_client:subscribe({"test/2"})
+mqtt_client:publish(args.topic2, "*** Lua test start ***")
+mqtt_client:subscribe({ args.topic1 })
 
 local running = true
 
 while (running) do
   mqtt_client:handler()
-  mqtt_client:publish("test/1", "*** Lua test B ***")
+  mqtt_client:publish(args.topic2, "*** Lua test message ***")
   socket.sleep(1.0)  -- seconds
 end
 
-mqtt_client:unsubscribe({"test/2"})
+mqtt_client:unsubscribe({ args.topic1 })
 mqtt_client:destroy()
 
 -- ------------------------------------------------------------------------- --
