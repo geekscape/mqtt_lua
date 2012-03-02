@@ -3,10 +3,10 @@
 -- mqtt_publish.lua
 -- ~~~~~~~~~~~~~~~~
 -- Please do not remove the following notices.
--- Copyright (c) 2011 by Geekscape Pty. Ltd.
+-- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- Documentation: http://http://geekscape.github.com/mqtt_lua
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.0 2011-07-28
+-- Version: 0.1 2012-03-03
 --
 -- Description
 -- ~~~~~~~~~~~
@@ -28,7 +28,7 @@ end
 
 -- ------------------------------------------------------------------------- --
 
-print("[mqtt_publish v0.0 2011-07-28]")
+print("[mqtt_publish v0.1 2012-03-03]")
 
 if (not is_openwrt()) then require("luarocks.require") end
 require("lapp")
@@ -37,7 +37,7 @@ local args = lapp [[
   Publish a message to a specified MQTT topic
   -d,--debug                                Verbose console logging
   -h,--host          (default localhost)    MQTT server hostname
-  -i,--id            (default MQTT client)  MQTT client identifier
+  -i,--id            (default mqtt pub)     MQTT client identifier
   -m,--message       (string)               Message to be published
   -p,--port          (default 1883)         MQTT server port number
   -t,--topic         (string)               Topic on which to publish
