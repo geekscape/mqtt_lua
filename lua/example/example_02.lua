@@ -3,10 +3,10 @@
 -- example_02.lua
 -- ~~~~~~~~~~~~~~
 -- Please do not remove the following notices.
--- Copyright (c) 2011 by Geekscape Pty. Ltd.
+-- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- Documentation: http://http://geekscape.github.com/mqtt_lua
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.0
+-- Version: 0.1
 --
 -- Description
 -- ~~~~~~~~~~~
@@ -42,20 +42,24 @@ local mqtt_client = MQTT.client.create(args.host, args.port)
 
 mqtt_client:connect(args.id)
 
+local error_message = nil
 local index = 1
 local messages = { "c010000", "c000100", "c000001" }
 
-while (true) do
-  mqtt_client:handler()
-  socket.sleep(0.1)  -- seconds
-
-  socket.sleep(args.sleep)  -- seconds
+while (error_message == nil) do
   mqtt_client:publish(args.topic, messages[index]);
 
   index = index + 1
   if (index > #messages) then index = 1 end
+
+  socket.sleep(args.sleep)  -- seconds
+  error_message = mqtt_client:handler()
 end
 
-mqtt_client:destroy()
+if (error_message == nil) then
+  mqtt_client:destroy()
+else
+  print(error_message)
+end
 
 -- ------------------------------------------------------------------------- --

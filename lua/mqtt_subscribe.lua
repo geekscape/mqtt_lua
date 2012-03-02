@@ -46,7 +46,7 @@ local args = lapp [[
   Subscribe to a specified MQTT topic
   -d,--debug                                Verbose console logging
   -h,--host          (default localhost)    MQTT server hostname
-  -i,--id            (default mqtt sub)     MQTT client identifier
+  -i,--id            (default mqtt_sub)     MQTT client identifier
   -k,--keepalive     (default 60)           Send MQTT PING period (seconds)
   -p,--port          (default 1883)         MQTT server port number
   -t,--topic         (string)               Subscription topic

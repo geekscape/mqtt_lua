@@ -48,7 +48,7 @@ require("lapp")
 local args = lapp [[
   Test Lua MQTT client library
   -d,--debug                        Verbose console logging
-  -i,--id      (default mqtt test)  MQTT client identifier
+  -i,--id      (default mqtt_test)  MQTT client identifier
   -p,--port    (default 1883)       MQTT server port number
   -s,--topic1  (default test/2)     Subscribe topic
   -t,--topic2  (default test/1)     Publish topic

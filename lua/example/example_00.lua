@@ -3,10 +3,10 @@
 -- example_00.lua
 -- ~~~~~~~~~~~~~~
 -- Please do not remove the following notices.
--- Copyright (c) 2011 by Geekscape Pty. Ltd.
+-- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- Documentation: http://http://geekscape.github.com/mqtt_lua
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.0
+-- Version: 0.1
 --
 -- Description
 -- ~~~~~~~~~~~
@@ -54,13 +54,18 @@ mqtt_client:connect(args.id)
 
 mqtt_client:subscribe({ args.topic1 })
 
-while (true) do
-  mqtt_client:handler()
+local error_message = nil
+
+while (error_message == nil) do
+  error_message = mqtt_client:handler()
   socket.sleep(1.0)  -- seconds
 end
 
-mqtt_client:unsubscribe({ args.topic1 })
-
-mqtt_client:destroy()
+if (error_message == nil) then
+  mqtt_client:unsubscribe({ args.topic1 })
+  mqtt_client:destroy()
+else
+  print(error_message)
+end
 
 -- ------------------------------------------------------------------------- --

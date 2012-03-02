@@ -37,7 +37,7 @@ local args = lapp [[
   Publish a message to a specified MQTT topic
   -d,--debug                                Verbose console logging
   -h,--host          (default localhost)    MQTT server hostname
-  -i,--id            (default mqtt pub)     MQTT client identifier
+  -i,--id            (default mqtt_pub)     MQTT client identifier
   -m,--message       (string)               Message to be published
   -p,--port          (default 1883)         MQTT server port number
   -t,--topic         (string)               Topic on which to publish
