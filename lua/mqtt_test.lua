@@ -3,10 +3,10 @@
 -- mqtt_test.lua
 -- ~~~~~~~~~~~~~
 -- Please do not remove the following notices.
--- Copyright (c) 2011 by Geekscape Pty. Ltd.
+-- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- Documentation: http://http://geekscape.github.com/mqtt_lua
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.0 2011-07-28
+-- Version: 0.1 2012-03-03
 --
 -- Description
 -- ~~~~~~~~~~~
@@ -40,19 +40,19 @@ end
 
 -- ------------------------------------------------------------------------- --
 
-print("[mqtt_test v0.0 2011-07-28]")
+print("[mqtt_test v0.1 2012-03-03]")
 
 if (not is_openwrt()) then require("luarocks.require") end
 require("lapp")
 
 local args = lapp [[
   Test Lua MQTT client library
-  -d,--debug                       Verbose console logging
-  -i,--id     (default MQTT test)  MQTT client identifier
-  -p,--port   (default 1883)       MQTT server port number
-  -s,--topic1  (default test/2)    Subscribe topic
-  -t,--topic2  (default test/1)    Publish topic
-  <host>      (default localhost)  MQTT server hostname
+  -d,--debug                        Verbose console logging
+  -i,--id      (default mqtt test)  MQTT client identifier
+  -p,--port    (default 1883)       MQTT server port number
+  -s,--topic1  (default test/2)     Subscribe topic
+  -t,--topic2  (default test/1)     Publish topic
+  <host>       (default localhost)  MQTT server hostname
 ]]
 
 local MQTT = require("mqtt_library")
@@ -66,15 +66,23 @@ mqtt_client:connect(args.id)
 mqtt_client:publish(args.topic2, "*** Lua test start ***")
 mqtt_client:subscribe({ args.topic1 })
 
+local error_message = nil
 local running = true
 
-while (running) do
-  mqtt_client:handler()
-  mqtt_client:publish(args.topic2, "*** Lua test message ***")
-  socket.sleep(1.0)  -- seconds
+while (error_message == nil and running) do
+  error_message = mqtt_client:handler()
+
+  if (error_message == nil) then
+    mqtt_client:publish(args.topic2, "*** Lua test message ***")
+    socket.sleep(1.0)  -- seconds
+  end
 end
 
-mqtt_client:unsubscribe({ args.topic1 })
-mqtt_client:destroy()
+if (error_message == nil) then
+  mqtt_client:unsubscribe({ args.topic1 })
+  mqtt_client:destroy()
+else
+  print(error_message)
+end
 
 -- ------------------------------------------------------------------------- --

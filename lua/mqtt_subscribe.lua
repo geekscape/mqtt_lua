@@ -3,10 +3,10 @@
 -- mqtt_subscribe.lua
 -- ~~~~~~~~~~~~~~~~~~
 -- Please do not remove the following notices.
--- Copyright (c) 2011 by Geekscape Pty. Ltd.
+-- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- Documentation: http://http://geekscape.github.com/mqtt_lua
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.0 2011-07-28
+-- Version: 0.1 2012-03-03
 --
 -- Description
 -- ~~~~~~~~~~~
@@ -37,7 +37,7 @@ end
 
 -- ------------------------------------------------------------------------- --
 
-print("[mqtt_subscribe v0.0 2011-07-28]")
+print("[mqtt_subscribe v0.1 2012-03-03]")
 
 if (not is_openwrt()) then require("luarocks.require") end
 require("lapp")
@@ -46,7 +46,7 @@ local args = lapp [[
   Subscribe to a specified MQTT topic
   -d,--debug                                Verbose console logging
   -h,--host          (default localhost)    MQTT server hostname
-  -i,--id            (default MQTT client)  MQTT client identifier
+  -i,--id            (default mqtt sub)     MQTT client identifier
   -k,--keepalive     (default 60)           Send MQTT PING period (seconds)
   -p,--port          (default 1883)         MQTT server port number
   -t,--topic         (string)               Subscription topic
@@ -74,13 +74,18 @@ end
 
 mqtt_client:subscribe({args.topic})
 
-while (true) do
-  mqtt_client:handler()
+local error_message = nil
+
+while (error_message == nil) do
+  error_message = mqtt_client:handler()
   socket.sleep(1.0)  -- seconds
 end
 
-mqtt_client:unsubscribe({args.topic})
-
-mqtt_client:destroy()
+if (error_message == nil) then
+  mqtt_client:unsubscribe({args.topic})
+  mqtt_client:destroy()
+else
+  print(error_message)
+end
 
 -- ------------------------------------------------------------------------- --
