@@ -1,9 +1,9 @@
 -- mqtt_library.lua
 -- ~~~~~~~~~~~~~~~~
 -- Please do not remove the following notices.
--- Copyright (c) 2011 by Geekscape Pty. Ltd.
+-- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.0 2011-07-28
+-- Version: 0.1 2012-03-03
 --
 -- Documentation
 -- ~~~~~~~~~~~~~
@@ -134,6 +134,7 @@ function MQTT.client.create(                                      -- Public API
   mqtt_client.port     = port or MQTT.client.DEFAULT_PORT
 
   mqtt_client.connected     = false
+  mqtt_client.destroyed     = false
   mqtt_client.last_activity = 0
   mqtt_client.message_id    = 0
   mqtt_client.outstanding   = {}
@@ -221,13 +222,16 @@ end
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function MQTT.client:destroy()                                    -- Public API
-
   MQTT.Utility.debug("MQTT.client:destroy()")
 
-  if (self.connected) then self:disconnect() end
+  if (self.destroyed == false) then
+    self.destroyed = true         -- Avoid recursion when message_write() fails
 
-  self.callback = nil
-  self.outstanding = nil
+    if (self.connected) then self:disconnect() end
+
+    self.callback = nil
+    self.outstanding = nil
+  end
 end
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
@@ -292,22 +296,24 @@ function MQTT.client:handler()                                    -- Public API
   local activity_timeout = self.last_activity + MQTT.client.KEEP_ALIVE_TIME
 
   if (MQTT.Utility.get_time() > activity_timeout) then
-    MQTT.Utility.debug("MQTT.client:handler(): PINGREQ");
+    MQTT.Utility.debug("MQTT.client:handler(): PINGREQ")
 
     self:message_write(MQTT.message.TYPE_PINGREQ, nil)
   end
 
 -- Check for available client socket data
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  local error_state = MQTT.Utility.socket_data_available(self.socket_client)
+  local ready = MQTT.Utility.socket_ready(self.socket_client)
 
-  if (error_state ~= "timeout") then
-    local buffer, error_message =
+  if (ready) then
+    local error_message, buffer =
       MQTT.Utility.socket_receive(self.socket_client)
 
-    if (error_message == "error") then
+    if (error_message ~= nil) then
       self:destroy()
-      error("socket_client:receive(): " .. error_message)
+      error_message = "socket_client:receive(): " .. error_message
+      MQTT.Utility.debug(error_message)
+      return(error_message)
     end
 
     if (buffer ~= nil and #buffer > 0) then
@@ -339,6 +345,8 @@ function MQTT.client:handler()                                    -- Public API
       end
     end
   end
+
+  return(nil)
 end
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --

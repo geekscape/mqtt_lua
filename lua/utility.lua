@@ -76,15 +76,17 @@ end
 
 -- ------------------------------------------------------------------------- --
 
-local function socket_data_available(socket_client)
-  local read_sockets, write_sockets, error_state = nil, nil, nil
+local function socket_ready(socket_client)
+  local ready, read_sockets, write_sockets, error_state = true, nil, nil, nil
 
   if (not isPsp()) then
     read_sockets, write_sockets, error_state =
       socket.select({socket_client}, nil, 0.001)
+
+    if (#read_sockets == 0) then ready = false end
   end
 
-  return(error_state)                                       -- nil or "timeout"
+  return(ready)
 end
 
 local function socket_receive(socket_client, byte_count)
@@ -96,15 +98,17 @@ local function socket_receive(socket_client, byte_count)
     buffer = socket_client:recv(byte_count)
   else
     response, error_message, buffer = socket_client:receive("*a")
+
+    if (error_message == "timeout") then error_message = nil end
   end
 
-  return(buffer), (error_message)                             -- nil or "error"
+  return(error_message), (buffer)                            -- nil or "closed"
 end
 
 local function socket_wait_connected(socket_client)
   if (isPsp()) then
     while (socket_client:isConnected() == false) do
-      System.sleep(100);
+      System.sleep(100)
     end
   else
     socket_client:settimeout(0.001)     -- So that socket.recieve doesn't block
@@ -148,7 +152,7 @@ Utility.get_time = get_time
 Utility.expired = expired
 Utility.shift_left = shift_left
 Utility.shift_right = shift_right
-Utility.socket_data_available = socket_data_available
+Utility.socket_ready = socket_ready
 Utility.socket_receive = socket_receive
 Utility.socket_wait_connected = socket_wait_connected
 Utility.table_to_string = table_to_string
