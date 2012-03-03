@@ -344,3 +344,7 @@ Known problems
 --------------
 - Occasional "MQTT.client:handler(): Message length mismatch" errors,
   particularly when subscribed topics are transmitting many messages.
+
+- Not really a problem, but if you find that the MQTT socket connection is
+  being closed for no apparent reason, particularly for subscribers ...
+  then check that all MQTT clients are using a unique client identifier.
