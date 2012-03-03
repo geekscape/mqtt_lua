@@ -98,6 +98,9 @@ You may choose to install an MQTT server either on the same or a different
 system from the Lua MQTT client library, depending upon your deployment
 scenario.
 
+You can also install the Lua MQTT client library as part of the
+[Aiko Platform run-time environment](https://github.com/geekscape/aiko_runtime)
+
 Prerequisites ...
 
 - Install [Mosquitto MQTT server](http://mosquitto.org/download)
