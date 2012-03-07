@@ -40,22 +40,27 @@
 --
 -- ToDo
 -- ~~~~
--- - Consider use of assert() and pcall() ?
--- - Fix problem when KEEP_ALIVE_TIME is short, e.g. mqtt_publish -k 1
+-- * Maintain both "last_activity_out" and "last_activity_in".
+-- * Update "last_activity_in" when messages are received.
+-- * When a PINGREQ is sent, must check for a PINGRESP, within KEEP_ALIVE_TIME..
+--   * Otherwise, fail the connection.
+-- * When connecting, wait for CONACK, until KEEP_ALIVE_TIME, before failing.
+-- * Implement parse PUBACK message.
+-- * Handle failed subscriptions, i.e no subscription acknowledgement received.
+-- * Fix problem when KEEP_ALIVE_TIME is short, e.g. mqtt_publish -k 1
 --     MQTT.client:handler(): Message length mismatch
+-- - Maintain and publish messaging statistics.
+-- - On socket error, optionally try reconnection to MQTT server.
+-- - Consider use of assert() and pcall() ?
 -- - Only expose public API functions, don't expose internal API functions.
 -- - Refactor "if self.connected()" to "self.checkConnected(error_message)".
 -- - Memory heap/stack monitoring.
--- - Implement parse PUBACK message.
 -- - When debugging, why isn't mosquitto sending back CONACK error code ?
--- - On socket error, optionally try reconnection to MQTT server.
--- - Maintain and publish messaging statistics.
 -- - Increase maximum payload length to 16,383 or larger ?
--- - Handle failed subscriptions, i.e no subscription acknowledgement received.
 -- - Subscription callbacks invoked by topic name (including wildcards).
 -- - Implement asynchronous state machine, rather than single-thread waiting.
 --   - After CONNECT, expect and wait for a CONACK.
--- - Implement complete MQTT broker (server)
+-- - Implement complete MQTT broker (server).
 -- - Consider using Copas http://keplerproject.github.com/copas/manual.html
 -- ------------------------------------------------------------------------- --
 
@@ -497,6 +502,8 @@ function MQTT.client:parse_message_pingresp(                    -- Internal API
   if (string.byte(message, 2) ~= 0x00) then
     error(me .. ": Invalid remaining length")
   end
+
+-- ToDo: self.ping_response_outstanding = false
 end
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
