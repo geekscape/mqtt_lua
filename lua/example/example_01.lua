@@ -24,7 +24,14 @@ function callback(
 
   print("Topic: " .. topic .. ", message: '" .. message .. "'")
 
-  mqtt_client2:publish(args.topic2, message)
+  time = socket.gettime()
+  if (time - last_time >= args.delay) then
+    -- print("PUBLISHING: " .. time .. " Delta: " .. time - last_time .. " Delay: " .. args.delay )
+    last_time = time
+    mqtt_client2:publish(args.topic2, message)
+  else
+    -- print("NOT READY: " .. time .. " Delta: " .. time - last_time .. " Delay: " .. args.delay )
+  end
 end
 
 -- ------------------------------------------------------------------------- --
@@ -47,9 +54,14 @@ args = lapp [[
   -q,--port2   (default 1883)        Publish MQTT server port number
   -s,--topic1  (default test/1)      Subscribe topic
   -t,--topic2  (default test/2)      Publish topic
+  -d,--delay   (default 0)           Minimum period between messages
 ]]
 
 local MQTT = require("mqtt_library")
+
+-- Globals accessed within callback
+last_time = 0
+time = 0
 
 mqtt_client1 = MQTT.client.create(args.host1, args.port1, callback)
 mqtt_client2 = MQTT.client.create(args.host2, args.port2)
