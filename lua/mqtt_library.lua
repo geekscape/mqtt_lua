@@ -45,6 +45,8 @@
 -- * When a PINGREQ is sent, must check for a PINGRESP, within KEEP_ALIVE_TIME..
 --   * Otherwise, fail the connection.
 -- * When connecting, wait for CONACK, until KEEP_ALIVE_TIME, before failing.
+-- * Should MQTT.client:connect() be asynchronous with a callback ?
+-- * Review all public APIs for asynchronous callback behaviour.
 -- * Implement parse PUBACK message.
 -- * Handle failed subscriptions, i.e no subscription acknowledgement received.
 -- * Fix problem when KEEP_ALIVE_TIME is short, e.g. mqtt_publish -k 1
