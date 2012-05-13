@@ -2,7 +2,7 @@ Lua MQTT client library (version 0.1 2012-03-03)
 =======================
 
 This project is part of the
-[Aiko Platform](https://sites.google.com/site/aikoplatform)
+[Eclipse Paho project](http://eclipse.org/paho)
 
 Contents
 --------
@@ -46,9 +46,6 @@ The Lua MQTT client library implements the client-side subset of the
 A good use-case for this library is running on constrained systems, such as
 [OpenWRT](http://openwrt.org),
 and acting as a gateway between non-MQTT clients and MQTT servers.
-The [Aiko Platform](https://sites.google.com/site/aikoplatform)
-uses this approach for aggregating non-TCP/IP devices and forwarding
-messages onto TCP/IP networks.
 An advantage of using Lua is that only a text editor is required for rapid
 development of simple MQTT client applications on platforms such as OpenWRT.
 In constrast, working with the C programming language would comparatively
@@ -98,9 +95,6 @@ You may choose to install an MQTT server either on the same or a different
 system from the Lua MQTT client library, depending upon your deployment
 scenario.
 
-You can also install the Lua MQTT client library as part of the
-[Aiko Platform run-time environment](https://github.com/geekscape/aiko_runtime)
-
 Prerequisites ...
 
 - Install [Mosquitto MQTT server](http://mosquitto.org/download)
@@ -112,10 +106,6 @@ or any other MQTT server
 On Linux, Lua and LuaRocks can be installed via your Linux distribution
 package manager.  On Mac OS X, Lua and LuaRocks can be installed via
 Darwin ports.  After that, LuaSocket can be installed via LuaRocks.
-
-Lua MQTT client library as a LuaRock ...
-
-* luarocks --from=_server_ install mqtt
 
 Lua MQTT client library (source code) from GitHub ...
 

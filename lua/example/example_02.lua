@@ -1,12 +1,18 @@
 #!/usr/bin/lua
--- ------------------------------------------------------------------------- --
+--
 -- example_02.lua
 -- ~~~~~~~~~~~~~~
--- Please do not remove the following notices.
--- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
--- Documentation: http://http://geekscape.github.com/mqtt_lua
--- License: AGPLv3 http://geekscape.org/static/aiko_license.html
 -- Version: 0.1
+-- ------------------------------------------------------------------------- --
+-- Copyright (c) 2011-2012 Geekscape Pty. Ltd.
+-- All rights reserved. This program and the accompanying materials
+-- are made available under the terms of the Eclipse Public License v1.0
+-- which accompanies this distribution, and is available at
+-- http://www.eclipse.org/legal/epl-v10.html
+--
+-- Contributors:
+--    Andy Gelme - Initial implementation
+-- -------------------------------------------------------------------------- --
 --
 -- Description
 -- ~~~~~~~~~~~

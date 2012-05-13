@@ -1,20 +1,21 @@
 -- mqtt_library.lua
 -- ~~~~~~~~~~~~~~~~
--- Please do not remove the following notices.
--- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
--- License: AGPLv3 http://geekscape.org/static/aiko_license.html
 -- Version: 0.1 2012-03-03
+-- -------------------------------------------------------------------------- --
+-- Copyright (c) 2011-2012 Geekscape Pty. Ltd.
+-- All rights reserved. This program and the accompanying materials
+-- are made available under the terms of the Eclipse Public License v1.0
+-- which accompanies this distribution, and is available at
+-- http://www.eclipse.org/legal/epl-v10.html
+--
+-- Contributors:
+--    Andy Gelme - Initial API and implementation
+-- -------------------------------------------------------------------------- --
 --
 -- Documentation
 -- ~~~~~~~~~~~~~
 -- MQTT Lua web-site
---   http://geekscape.github.com/mqtt_lua
---
--- MQTT Lua repository notes
---   https://github.com/geekscape/mqtt_lua/blob/master/readme.markdown
---
--- Aiko Platform web-site
---   https://sites.google.com/site/aikoplatform
+--   http://eclipse.org/paho/...  -- FILL ME IN !
 --
 -- References
 -- ~~~~~~~~~~
