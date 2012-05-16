@@ -206,7 +206,7 @@ function MQTT.client:connect(                                     -- Public API
 
 -- Keep alive timer (bytes 11 LSB and 12 MSB, unit is seconds)
 -- ~~~~~~~~~~~~~~~~~
-  payload = payload .. string.char(MQTT.client.KEEP_ALIVE_TIME / 256)
+  payload = payload .. string.char(math.floor(MQTT.client.KEEP_ALIVE_TIME / 256))
   payload = payload .. string.char(MQTT.client.KEEP_ALIVE_TIME % 256)
 
 -- Client identifier
@@ -274,7 +274,7 @@ function MQTT.client.encode_utf8(                               -- Internal API
   input)  -- string
 
   local output
-  output = string.char(#input / 256)
+  output = string.char(math.floor(#input / 256))
   output = output .. string.char(#input % 256)
   output = output .. input
 
@@ -704,7 +704,7 @@ function MQTT.client:subscribe(                                   -- Public API
   self.message_id = self.message_id + 1
 
   local message
-  message = string.char(self.message_id / 256)
+  message = string.char(math.floor(self.message_id / 256))
   message = message .. string.char(self.message_id % 256)
 
   for index, topic in ipairs(topics) do
@@ -739,7 +739,7 @@ function MQTT.client:unsubscribe(                                 -- Public API
   self.message_id = self.message_id + 1
 
   local message
-  message = string.char(self.message_id / 256)
+  message = string.char(math.floor(self.message_id / 256))
   message = message .. string.char(self.message_id % 256)
 
   for index, topic in ipairs(topics) do
