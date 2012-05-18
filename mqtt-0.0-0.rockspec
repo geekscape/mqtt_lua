@@ -30,9 +30,9 @@ build = {
   modules = {
     lapp           = "lua/lapp.lua",
     mqtt_library   = "lua/mqtt_library.lua",
-    mqtt_publish   = "lua/mqtt_publish.lua",
-    mqtt_subscribe = "lua/mqtt_subscribe.lua",
-    mqtt_test      = "lua/mqtt_test.lua",
+    mqtt_publish   = "lua/example/mqtt_publish.lua",
+    mqtt_subscribe = "lua/example/mqtt_subscribe.lua",
+    mqtt_test      = "lua/example/mqtt_test.lua",
     utility        = "lua/utility.lua"
   }
 }
