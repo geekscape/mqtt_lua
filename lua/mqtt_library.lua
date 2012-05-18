@@ -40,6 +40,7 @@
 --
 -- ToDo
 -- ~~~~
+-- * Increase maximum payload length to 16,383 or larger ?
 -- * Maintain both "last_activity_out" and "last_activity_in".
 -- * Update "last_activity_in" when messages are received.
 -- * When a PINGREQ is sent, must check for a PINGRESP, within KEEP_ALIVE_TIME..
@@ -51,14 +52,13 @@
 -- * Handle failed subscriptions, i.e no subscription acknowledgement received.
 -- * Fix problem when KEEP_ALIVE_TIME is short, e.g. mqtt_publish -k 1
 --     MQTT.client:handler(): Message length mismatch
--- - Maintain and publish messaging statistics.
 -- - On socket error, optionally try reconnection to MQTT server.
 -- - Consider use of assert() and pcall() ?
 -- - Only expose public API functions, don't expose internal API functions.
 -- - Refactor "if self.connected()" to "self.checkConnected(error_message)".
+-- - Maintain and publish messaging statistics.
 -- - Memory heap/stack monitoring.
 -- - When debugging, why isn't mosquitto sending back CONACK error code ?
--- - Increase maximum payload length to 16,383 or larger ?
 -- - Subscription callbacks invoked by topic name (including wildcards).
 -- - Implement asynchronous state machine, rather than single-thread waiting.
 --   - After CONNECT, expect and wait for a CONACK.
@@ -131,6 +131,7 @@ function MQTT.client.create(                                      -- Public API
   hostname,  -- string:   Host name or address of the MQTT broker
   port,      -- integer:  Port number of the MQTT broker (default: 1883)
   callback)  -- function: Invoked when subscribed topic messages received
+             -- return:   mqtt_client table
 
   local mqtt_client = {}
 
@@ -161,9 +162,10 @@ function MQTT.client:connect(                                     -- Public API
   will_qos,      -- byte:   Last will and testament Quality Of Service
   will_retain,   -- byte:   Last will and testament retention status
   will_message)  -- string: Last will and testament message
+                 -- return: nil or error message
 
   if (self.connected) then
-    error("MQTT.client:connect(): Already connected")
+    return("MQTT.client:connect(): Already connected")
   end
 
   MQTT.Utility.debug("MQTT.client:connect(): " .. identifier)
@@ -171,7 +173,7 @@ function MQTT.client:connect(                                     -- Public API
   self.socket_client = socket.connect(self.hostname, self.port)
 
   if (self.socket_client == nil) then
-    error("MQTT.client:connect(): Couldn't open MQTT broker connection")
+    return("MQTT.client:connect(): Couldn't open MQTT broker connection")
   end
 
   MQTT.Utility.socket_wait_connected(self.socket_client)
@@ -221,7 +223,7 @@ function MQTT.client:connect(                                     -- Public API
 
 -- Send MQTT message
 -- ~~~~~~~~~~~~~~~~~
-  self:message_write(MQTT.message.TYPE_CONNECT, payload)
+  return(self:message_write(MQTT.message.TYPE_CONNECT, payload))
 end
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
@@ -368,6 +370,7 @@ end
 function MQTT.client:message_write(                             -- Internal API
   message_type,  -- enumeration
   payload)       -- string
+                 -- return: nil or error message
 
 -- TODO: Complete implementation of fixed header byte 1
 
@@ -377,7 +380,7 @@ function MQTT.client:message_write(                             -- Internal API
     message = message .. string.char(0)  -- Zero length, no payload
   else
     if (#payload > MQTT.client.MAX_PAYLOAD_LENGTH) then
-      error(
+      return(
         "MQTT.client:message_write(): Payload length = " .. #payload ..
         " exceeds maximum of " .. MQTT.client.MAX_PAYLOAD_LENGTH
       )
@@ -391,10 +394,11 @@ function MQTT.client:message_write(                             -- Internal API
 
   if (status == nil) then
     self:destroy()
-    error("MQTT.client:message_write(): " .. error_message)
+    return("MQTT.client:message_write(): " .. error_message)
   end
 
   self.last_activity = MQTT.Utility.get_time()
+  return(nil)
 end
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
