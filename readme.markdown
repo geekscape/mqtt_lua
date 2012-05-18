@@ -123,8 +123,8 @@ This command periodically publishes a message on topic "test/1" and
 subscribes to the topic "test/2".  The command exits when the message
 "quit" is published on topic "test/2".
 
-      cd $(LUA_MQTT_LIB)        // where Lua MQTT library script is installed
-      ./mqtt_test -d localhost  // Assume MQTT server is running on "localhost"
+      cd $(LUA_MQTT_LIB)              // where Lua MQTT library is installed
+      example/mqtt_test -d localhost  // Assume MQTT server is on "localhost"
 
       -d,--debug                       Verbose console logging
       -i,--id     (default MQTT test)  MQTT client identifier
@@ -135,7 +135,7 @@ subscribes to the topic "test/2".  The command exits when the message
 
 This command publishes a single message and then exits.
 
-      ./mqtt_publish -d -t test/1 -m "Test message"
+      example/mqtt_publish -d -t test/1 -m "Test message"
 
 Only the _--topic_ and _--message_ parameters are required.
 
@@ -155,7 +155,7 @@ Only the _--topic_ and _--message_ parameters are required.
 This command subscribes to a topic and listens indefinitely for messages.
 Use ^C (or similar) to stop execution.
 
-      ./mqtt_subscribe -d -t test/1
+      example/mqtt_subscribe -d -t test/1
 
 Only the _--topic_ parameter is required.
 
@@ -174,7 +174,7 @@ Only the _--topic_ parameter is required.
 Example code
 ------------
 The complete functioning code can be viewed here ...
-[mqtt_lua/lua/mqtt\_test.lua](https://github.com/geekscape/mqtt_lua/blob/master/lua/mqtt_test.lua)
+[mqtt_lua/lua/example/mqtt\_test.lua](https://github.com/geekscape/mqtt_lua/blob/master/lua/example/mqtt_test.lua)
 
     -- Define a function which is called by mqtt_client:handler(),
     -- whenever messages are received on the subscribed topics
