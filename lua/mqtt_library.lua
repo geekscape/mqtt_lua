@@ -23,6 +23,7 @@
 
 -- MQTT protocol specification 3.1
 --   https://www.ibm.com/developerworks/webservices/library/ws-mqtt
+--   http://mqtt.org/wiki/doku.php/mqtt_protocol   # Clarifications
 --
 -- Notes
 -- ~~~~~
@@ -41,7 +42,9 @@
 -- ToDo
 -- ~~~~
 -- * Increase maximum payload length to 16,383 or larger ?
+-- * Consider when payload needs to be an array of bytes (not characters).
 -- * Maintain both "last_activity_out" and "last_activity_in".
+-- * - http://mqtt.org/wiki/doku.php/keepalive_for_the_client
 -- * Update "last_activity_in" when messages are received.
 -- * When a PINGREQ is sent, must check for a PINGRESP, within KEEP_ALIVE_TIME..
 --   * Otherwise, fail the connection.
@@ -113,6 +116,7 @@ MQTT.message.TYPE_DISCONNECT  = 0x0e
 MQTT.message.TYPE_RESERVED    = 0x0f
 
 -- MQTT 3.1 Specification: Section 3.2: CONACK acknowledge connection errors
+-- http://mqtt.org/wiki/doku.php/extended_connack_codes
 
 MQTT.CONACK = {}
 MQTT.CONACK.error_message = {          -- CONACK return code used as the index
@@ -121,6 +125,7 @@ MQTT.CONACK.error_message = {          -- CONACK return code used as the index
   "Server unavailable",
   "Bad user name or password",
   "Not authorized"
+--"Invalid will topic"                 -- Proposed
 }
 
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
