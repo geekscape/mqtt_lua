@@ -333,20 +333,39 @@ function MQTT.client:handler()                                    -- Public API
       local index = 1
 
       -- Parse individual messages (each must be at least 2 bytes long)
+      -- Decode "remaining length" (MQTT v3.1 specification pages 6 and 7)
 
       while (index < #buffer) do
-        local message_length = string.byte(buffer, index + 1) + 2
-        local message = string.sub(buffer, index, index + message_length - 1)
-        index = index + message_length
+        local message_type_flags = string.byte(buffer, index)
+        local multiplier = 1
+        local remaining_length = 0
 
-        self:parse_message(message)
+        repeat
+          index = index + 1
+          local digit = string.byte(buffer, index)
+          remaining_length = remaining_length + ((digit % 128) * multiplier)
+          multiplier = multiplier * 128
+        until digit < 128                              -- check continuation bit
+
+        local message = string.sub(buffer, index + 1, index + remaining_length)
+
+        if (#message == remaining_length) then
+          self:parse_message(message_type_flags, remaining_length, message)
+        else
+          MQTT.Utility.debug(
+            "MQTT.client:handler(): Incorrect remaining length: " ..
+            remaining_length .. " ~= message length: " .. #message
+          )
+        end
+
+        index = index + remaining_length + 1
       end
 
       -- Check for any left over bytes, i.e. partial message received
 
       if (index ~= (#buffer + 1)) then
         local error_message =
-          "MQTT.client:handler(): Message length mismatch" ..
+          "MQTT.client:handler(): Partial message received" ..
           index .. " ~= " .. (#buffer + 1)
 
         if (MQTT.ERROR_TERMINATE) then         -- TODO: Refactor duplicate code
@@ -369,7 +388,7 @@ end
 --
 -- byte  1:   Message type and flags (DUP, QOS level, and Retain) fields
 -- bytes 2-5: Remaining length field (between one and four bytes long)
--- bytes m-n: Optional variable header and payload
+-- bytes m- : Optional variable header and payload
 
 function MQTT.client:message_write(                             -- Internal API
   message_type,  -- enumeration
@@ -390,16 +409,16 @@ function MQTT.client:message_write(                             -- Internal API
       )
     end
 
-    -- Encode payload length (as per MQTT v3.1 specification pages 6 and 7)
+    -- Encode "remaining length" (MQTT v3.1 specification pages 6 and 7)
 
-    local payload_length = #payload
+    local remaining_length = #payload
 
     repeat
-      local value = payload_length % 128
-      payload_length = math.floor(payload_length / 128)
-      if (payload_length > 0) then value = value + 128 end   -- continuation bit
-      message = message .. string.char(value)
-    until payload_length == 0
+      local digit = remaining_length % 128
+      remaining_length = math.floor(remaining_length / 128)
+      if (remaining_length > 0) then digit = digit + 128 end -- continuation bit
+      message = message .. string.char(digit)
+    until remaining_length == 0
 
     message = message .. payload
   end
@@ -422,36 +441,42 @@ end
 --
 -- byte  1:   Message type and flags (DUP, QOS level, and Retain) fields
 -- bytes 2-5: Remaining length field (between one and four bytes long)
--- bytes m-n: Optional variable header and payload
+-- bytes m- : Optional variable header and payload
+--
+-- The message type/flags and remaining length are already parsed and
+-- removed from the message by the time this function is invoked.
+-- Leaving just the optional variable header and payload.
 
 function MQTT.client:parse_message(                             -- Internal API
-  message)  -- string
+  message_type_flags,  -- byte
+  remaining_length,    -- integer
+  message)             -- string: Optional variable header and payload
 
-  local message_type = MQTT.Utility.shift_right(string.byte(message), 4)
+  local message_type = MQTT.Utility.shift_right(message_type_flags, 4)
 
 -- TODO: MQTT.message.TYPE table should include "parser handler" function.
 --       This would nicely collapse the if .. then .. elseif .. end.
 
   if (message_type == MQTT.message.TYPE_CONACK) then
-    self:parse_message_conack(message)
+    self:parse_message_conack(message_type_flags, remaining_length, message)
 
   elseif (message_type == MQTT.message.TYPE_PUBLISH) then
-    self:parse_message_publish(message)
+    self:parse_message_publish(message_type_flags, remaining_length, message)
 
   elseif (message_type == MQTT.message.TYPE_PUBACK) then
     print("MQTT.client:parse_message(): PUBACK -- UNIMPLEMENTED --")    -- TODO
 
   elseif (message_type == MQTT.message.TYPE_SUBACK) then
-    self:parse_message_suback(message)
+    self:parse_message_suback(message_type_flags, remaining_length, message)
 
   elseif (message_type == MQTT.message.TYPE_UNSUBACK) then
-    self:parse_message_unsuback(message)
+    self:parse_message_unsuback(message_type_flags, remaining_length, message)
 
   elseif (message_type == MQTT.message.TYPE_PINGREQ) then
     self:ping_response()
 
   elseif (message_type == MQTT.message.TYPE_PINGRESP) then
-    self:parse_message_pingresp(message)
+    self:parse_message_pingresp(message_type_flags, remaining_length, message)
 
   else
     local error_message =
@@ -471,27 +496,24 @@ end
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~
 -- MQTT 3.1 Specification: Section 3.2: CONACK Acknowledge connection
 --
--- bytes 1,2: Fixed message header, see MQTT.client:parse_message()
--- byte  3  : Reserved value
--- byte  4  : Connect return code, see MQTT.CONACK.error_message[]
+-- byte 1: Reserved value
+-- byte 2: Connect return code, see MQTT.CONACK.error_message[]
 
 function MQTT.client:parse_message_conack(                      -- Internal API
-  message)  -- string
+  message_type_flags,  -- byte
+  remaining_length,    -- integer
+  message)             -- string
 
   local me = "MQTT.client:parse_message_conack()"
   MQTT.Utility.debug(me)
 
-  if (#message ~= 4) then
-    error(me .. ": Invalid message length")
-  end
-
-  if (string.byte(message, 2) ~= 0x02) then
+  if (remaining_length ~= 2) then
     error(me .. ": Invalid remaining length")
   end
 
-  local return_code = string.byte(message, 4)
+  local return_code = string.byte(message, 2)
 
-  if (return_code ~= 0x00) then
+  if (return_code ~= 0) then
     local error_message = "Unknown return code"
 
     if (return_code <= table.getn(MQTT.CONACK.error_message)) then
@@ -506,20 +528,16 @@ end
 -- Parse MQTT PINGRESP message
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- MQTT 3.1 Specification: Section 3.13: PING response
---
--- bytes 1,2: Fixed message header, see MQTT.client:parse_message()
 
 function MQTT.client:parse_message_pingresp(                    -- Internal API
-  message)  -- string
+  message_type_flags,  -- byte
+  remaining_length,    -- integer
+  message)             -- string
 
   local me = "MQTT.client:parse_message_pingresp()"
   MQTT.Utility.debug(me)
 
-  if (#message ~= 2) then
-    error(me .. ": Invalid message length")
-  end
-
-  if (string.byte(message, 2) ~= 0x00) then
+  if (remaining_length ~= 0) then
     error(me .. ": Invalid remaining length")
   end
 
@@ -531,37 +549,32 @@ end
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- MQTT 3.1 Specification: Section 3.3: Publish message
 --
--- bytes 1,2: Fixed message header, see MQTT.client:message_write()
---            Variable header ..
--- bytes 3- : Topic name and optional Message Identifier (if QOS > 0)
+-- Variable header ..
+-- bytes 1- : Topic name and optional Message Identifier (if QOS > 0)
 -- bytes m- : Payload
 
 function MQTT.client:parse_message_publish(                     -- Internal API
-  message)  -- string
+  message_type_flags,  -- byte
+  remaining_length,    -- integer
+  message)             -- string
 
   local me = "MQTT.client:parse_message_publish()"
   MQTT.Utility.debug(me)
 
   if (self.callback ~= nil) then
-    if (#message < 5) then
-      error(me .. ": Invalid message length: " .. #message)
-    end
-
-    local qos = MQTT.Utility.shift_left(string.byte(message, 1), 1) % 3
-
-    local remaining_length = string.byte(message, 2)
-
     if (remaining_length < 3) then
       error(me .. ": Invalid remaining length: " .. remaining_length)
     end
 
-    local topic_length = string.byte(message, 3) * 256 + string.byte(message, 4)
-    local topic = string.sub(message, 5, topic_length + 4)
-
-    local index = topic_length + 5
+    local topic_length = string.byte(message, 1) * 256
+    topic_length = topic_length + string.byte(message, 2)
+    local topic  = string.sub(message, 3, topic_length + 2)
+    local index  = topic_length + 3
 
 -- Handle optional Message Identifier, for QOS levels 1 and 2
 -- TODO: Enable Subscribe with QOS and deal with PUBACK, etc.
+
+    local qos = MQTT.Utility.shift_left(message_type_flags, 1) % 3
 
     if (qos > 0) then
       local message_id = string.byte(message, index) * 256
@@ -569,7 +582,7 @@ function MQTT.client:parse_message_publish(                     -- Internal API
       index = index + 2
     end
 
-    local payload_length = remaining_length - index + 3
+    local payload_length = remaining_length - index + 1
     local payload = string.sub(message, index, index + payload_length - 1)
 
     self.callback(topic, payload)
@@ -581,28 +594,22 @@ end
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~
 -- MQTT 3.1 Specification: Section 3.9: SUBACK Subscription acknowledgement
 --
--- bytes 1,2: Fixed message header, see MQTT.client:parse_message()
--- bytes 3,4: Message Identifier
--- bytes 5- : List of granted QOS for each subscribed topic
+-- bytes 1,2: Message Identifier
+-- bytes 3- : List of granted QOS for each subscribed topic
 
 function MQTT.client:parse_message_suback(                      -- Internal API
-  message)  -- string
+  message_type_flags,  -- byte
+  remaining_length,    -- integer
+  message)             -- string
 
   local me = "MQTT.client:parse_message_suback()"
   MQTT.Utility.debug(me)
-
-  if (#message < 5) then
-    error(me .. ": Invalid message length: " .. #message)
-  end
-
-  local remaining_length = string.byte(message, 2)
 
   if (remaining_length < 3) then
     error(me .. ": Invalid remaining length: " .. remaining_length)
   end
 
-  local message_id = string.byte(message, 3) * 256 + string.byte(message, 4)
-
+  local message_id  = string.byte(message, 1) * 256 + string.byte(message, 2)
   local outstanding = self.outstanding[message_id]
 
   if (outstanding == nil) then
@@ -617,7 +624,7 @@ function MQTT.client:parse_message_suback(                      -- Internal API
 
   local topic_count = table.getn(outstanding[2])
 
-  if (topic_count + 2 ~= remaining_length) then
+  if (topic_count ~= remaining_length - 2) then
     error(me .. ": Didn't received expected number of topics: " .. topic_count)
   end
 end
@@ -627,24 +634,21 @@ end
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- MQTT 3.1 Specification: Section 3.11: UNSUBACK Unsubscription acknowledgement
 --
--- bytes 1,2: Fixed message header, see MQTT.client:parse_message()
--- bytes 3,4: Message Identifier
+-- bytes 1,2: Message Identifier
 
 function MQTT.client:parse_message_unsuback(                    -- Internal API
-  message)  -- string
+  message_type_flags,  -- byte
+  remaining_length,    -- integer
+  message)             -- string
 
   local me = "MQTT.client:parse_message_unsuback()"
   MQTT.Utility.debug(me)
 
-  if (#message ~= 4) then
-    error(me .. ": Invalid message length: " .. #message)
-  end
-
-  if (string.byte(message, 2) ~= 0x02) then
+  if (remaining_length ~= 2) then
     error(me .. ": Invalid remaining length")
   end
 
-  local message_id = string.byte(message, 3) * 256 + string.byte(message, 4)
+  local message_id = string.byte(message, 1) * 256 + string.byte(message, 2)
 
   local outstanding = self.outstanding[message_id]
 
@@ -663,8 +667,6 @@ end
 -- Transmit MQTT Ping response message
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -- MQTT 3.1 Specification: Section 3.13: PING response
---
--- bytes 1,2: Fixed message header, see MQTT.client:message_write()
 
 function MQTT.client:ping_response()                            -- Internal API
   MQTT.Utility.debug("MQTT.client:ping_response()")
@@ -682,7 +684,7 @@ end
 -- MQTT 3.1 Specification: Section 3.3: Publish message
 --
 -- bytes 1,2: Fixed message header, see MQTT.client:message_write()
---            Variable header ..
+-- Variable header ..
 -- bytes 3- : Topic name and optional Message Identifier (if QOS > 0)
 -- bytes m- : Payload
 
@@ -707,7 +709,7 @@ end
 -- MQTT 3.1 Specification: Section 3.8: Subscribe to named topics
 --
 -- bytes 1,2: Fixed message header, see MQTT.client:message_write()
---            Variable header ..
+-- Variable header ..
 -- bytes 3,4: Message Identifier
 -- bytes 5- : List of topic names and their QOS level
 
@@ -741,7 +743,7 @@ end
 -- MQTT 3.1 Specification: Section 3.10: Unsubscribe from named topics
 --
 -- bytes 1,2: Fixed message header, see MQTT.client:message_write()
---            Variable header ..
+-- Variable header ..
 -- bytes 3,4: Message Identifier
 -- bytes 5- : List of topic names
 
