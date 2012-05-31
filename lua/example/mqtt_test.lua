@@ -2,7 +2,7 @@
 --
 -- mqtt_test.lua
 -- ~~~~~~~~~~~~~
--- Version: 0.1 2012-03-03
+-- Version: 0.2 2012-06-01
 -- ------------------------------------------------------------------------- --
 -- Copyright (c) 2011-2012 Geekscape Pty. Ltd.
 -- All rights reserved. This program and the accompanying materials
@@ -46,7 +46,7 @@ end
 
 -- ------------------------------------------------------------------------- --
 
-print("[mqtt_test v0.1 2012-03-03]")
+print("[mqtt_test v0.2 2012-06-01]")
 
 if (not is_openwrt()) then require("luarocks.require") end
 require("lapp")

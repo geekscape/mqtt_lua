@@ -1,6 +1,6 @@
 -- mqtt_library.lua
 -- ~~~~~~~~~~~~~~~~
--- Version: 0.1 2012-03-03
+-- Version: 0.2 2012-06-01
 -- -------------------------------------------------------------------------- --
 -- Copyright (c) 2011-2012 Geekscape Pty. Ltd.
 -- All rights reserved. This program and the accompanying materials
