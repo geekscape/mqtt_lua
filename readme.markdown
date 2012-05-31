@@ -1,4 +1,4 @@
-Lua MQTT client library (version 0.1 2012-03-03)
+Lua MQTT client library (version 0.2 2012-06-01)
 =======================
 
 This project is part of the

@@ -6,7 +6,7 @@
 -- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- Documentation: http://http://geekscape.github.com/mqtt_lua
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.1 2012-03-03
+-- Version: 0.2 2012-06-01
 --
 -- Description
 -- ~~~~~~~~~~~
@@ -28,7 +28,7 @@ end
 
 -- ------------------------------------------------------------------------- --
 
-print("[mqtt_publish v0.1 2012-03-03]")
+print("[mqtt_publish v0.2 2012-06-01]")
 
 if (not is_openwrt()) then require("luarocks.require") end
 require("lapp")

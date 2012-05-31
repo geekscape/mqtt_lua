@@ -3,7 +3,7 @@
 -- Please do not remove the following notices.
 -- Copyright (c) 2011-2012 by Geekscape Pty. Ltd.
 -- License: AGPLv3 http://geekscape.org/static/aiko_license.html
--- Version: 0.1 2012-03-03
+-- Version: 0.2 2012-06-01
 --
 -- Documentation
 -- ~~~~~~~~~~~~~
