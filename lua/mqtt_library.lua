@@ -32,7 +32,7 @@
 -- - Does not support connection username and password.
 -- - Fixed message header byte 1, only implements the "message type".
 -- - Only supports QOS level 0.
--- - Maximum payload length is 127 bytes (easily increased).
+-- - Maximum payload length is 268,435,455 bytes (as per specification).
 -- - Publish message doesn't support "message identifier".
 -- - Subscribe acknowledgement messages don't check granted QOS level.
 -- - Outstanding subscribe acknowledgement messages aren't escalated.
@@ -41,7 +41,6 @@
 --
 -- ToDo
 -- ~~~~
--- * Increase maximum payload length to 16,383 or larger ?
 -- * Consider when payload needs to be an array of bytes (not characters).
 -- * Maintain both "last_activity_out" and "last_activity_in".
 -- * - http://mqtt.org/wiki/doku.php/keepalive_for_the_client
@@ -92,8 +91,8 @@ MQTT.client = {}
 MQTT.client.__index = MQTT.client
 
 MQTT.client.DEFAULT_PORT       = 1883
-MQTT.client.KEEP_ALIVE_TIME    =   60  -- seconds (maximum is 65535)
-MQTT.client.MAX_PAYLOAD_LENGTH =  127
+MQTT.client.KEEP_ALIVE_TIME    = 60 -- seconds (maximum is 65535)
+MQTT.client.MAX_PAYLOAD_LENGTH = 268435455 -- bytes
 
 -- MQTT 3.1 Specification: Section 2.1: Fixed header, Message type
 
@@ -369,8 +368,8 @@ end
 -- MQTT 3.1 Specification: Section 2.1: Fixed header
 --
 -- byte  1:   Message type and flags (DUP, QOS level, and Retain) fields
--- byte  2:   Remaining length field (at least one byte)
--- bytes 3-n: Optional variable header and payload
+-- bytes 2-5: Remaining length field (between one and four bytes long)
+-- bytes m-n: Optional variable header and payload
 
 function MQTT.client:message_write(                             -- Internal API
   message_type,  -- enumeration
@@ -391,7 +390,17 @@ function MQTT.client:message_write(                             -- Internal API
       )
     end
 
-    message = message .. string.char(#payload)
+    -- Encode payload length (as per MQTT v3.1 specification pages 6 and 7)
+
+    local payload_length = #payload
+
+    repeat
+      local value = payload_length % 128
+      payload_length = math.floor(payload_length / 128)
+      if (payload_length > 0) then value = value + 128 end   -- continuation bit
+      message = message .. string.char(value)
+    until payload_length == 0
+
     message = message .. payload
   end
 
@@ -412,8 +421,8 @@ end
 -- MQTT 3.1 Specification: Section 2.1: Fixed header
 --
 -- byte  1:   Message type and flags (DUP, QOS level, and Retain) fields
--- byte  2:   Remaining length field (at least one byte)
--- bytes 3-n: Optional variable header and payload
+-- bytes 2-5: Remaining length field (between one and four bytes long)
+-- bytes m-n: Optional variable header and payload
 
 function MQTT.client:parse_message(                             -- Internal API
   message)  -- string
