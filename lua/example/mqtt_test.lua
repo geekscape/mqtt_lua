@@ -16,8 +16,8 @@
 --
 -- Description
 -- ~~~~~~~~~~~
--- Repetitively publishes MQTT messages on the topic2,
--- until the "quit" message is received on the topic1.
+-- Repetitively publishes MQTT messages on the topic_p,
+-- until the "quit" message is received on the topic_s.
 --
 -- References
 -- ~~~~~~~~~~
@@ -49,16 +49,16 @@ end
 print("[mqtt_test v0.2 2012-06-01]")
 
 if (not is_openwrt()) then require("luarocks.require") end
-require("lapp")
+local lapp = require("pl.lapp")
 
 local args = lapp [[
   Test Lua MQTT client library
-  -d,--debug                        Verbose console logging
-  -i,--id      (default mqtt_test)  MQTT client identifier
-  -p,--port    (default 1883)       MQTT server port number
-  -s,--topic1  (default test/2)     Subscribe topic
-  -t,--topic2  (default test/1)     Publish topic
-  <host>       (default localhost)  MQTT server hostname
+  -d,--debug                         Verbose console logging
+  -i,--id       (default mqtt_test)  MQTT client identifier
+  -p,--port     (default 1883)       MQTT server port number
+  -s,--topic_s  (default test/2)     Subscribe topic
+  -t,--topic_p  (default test/1)     Publish topic
+  <host>        (default localhost)  MQTT server hostname
 ]]
 
 local MQTT = require("mqtt_library")
@@ -69,8 +69,8 @@ local mqtt_client = MQTT.client.create(args.host, args.port, callback)
 
 mqtt_client:connect(args.id)
 
-mqtt_client:publish(args.topic2, "*** Lua test start ***")
-mqtt_client:subscribe({ args.topic1 })
+mqtt_client:publish(args.topic_p, "*** Lua test start ***")
+mqtt_client:subscribe({ args.topic_s })
 
 local error_message = nil
 local running = true
@@ -79,13 +79,13 @@ while (error_message == nil and running) do
   error_message = mqtt_client:handler()
 
   if (error_message == nil) then
-    mqtt_client:publish(args.topic2, "*** Lua test message ***")
+    mqtt_client:publish(args.topic_p, "*** Lua test message ***")
     socket.sleep(1.0)  -- seconds
   end
 end
 
 if (error_message == nil) then
-  mqtt_client:unsubscribe({ args.topic1 })
+  mqtt_client:unsubscribe({ args.topic_s })
   mqtt_client:destroy()
 else
   print(error_message)

@@ -21,6 +21,13 @@
 -- ToDo
 -- ~~~~
 -- - On failure, automatically reconnect to MQTT server.
+-- - Error handling: MQTT.client.connect()
+-- - Error handling: MQTT.client.destroy()
+-- - Error handling: MQTT.client.disconnect()
+-- - Error handling: MQTT.client.handler()
+-- - Error handling: MQTT.client.publish()
+-- - Error handling: MQTT.client.subscribe()
+-- - Error handling: MQTT.client.unsubscribe()
 -- ------------------------------------------------------------------------- --
 
 function callback(
@@ -29,7 +36,7 @@ function callback(
 
   print("Topic: " .. topic .. ", message: '" .. message .. "'")
 
-  mqtt_client:publish(args.topic2, message)
+  mqtt_client:publish(args.topic_p, message)
 end
 
 -- ------------------------------------------------------------------------- --
@@ -41,15 +48,15 @@ end
 -- ------------------------------------------------------------------------- --
 
 if (not is_openwrt()) then require("luarocks.require") end
-require("lapp")
+local lapp = require("pl.lapp")
 
 args = lapp [[
-  Subscribe to topic1 and publish all messages on topic2
-  -h,--host    (default localhost)   MQTT server hostname
-  -i,--id      (default example_00)  MQTT client identifier
-  -p,--port    (default 1883)        MQTT server port number
-  -s,--topic1  (default test/1)      Subscribe topic
-  -t,--topic2  (default test/2)      Publish topic
+  Subscribe to topic_s and publish all messages on topic_p
+  -H,--host     (default localhost)   MQTT server hostname
+  -i,--id       (default example_00)  MQTT client identifier
+  -p,--port     (default 1883)        MQTT server port number
+  -s,--topic_s  (default test/1)      Subscribe topic
+  -t,--topic_p  (default test/2)      Publish topic
 ]]
 
 local MQTT = require("mqtt_library")
@@ -58,7 +65,7 @@ mqtt_client = MQTT.client.create(args.host, args.port, callback)
 
 mqtt_client:connect(args.id)
 
-mqtt_client:subscribe({ args.topic1 })
+mqtt_client:subscribe({ args.topic_s })
 
 local error_message = nil
 
@@ -68,7 +75,7 @@ while (error_message == nil) do
 end
 
 if (error_message == nil) then
-  mqtt_client:unsubscribe({ args.topic1 })
+  mqtt_client:unsubscribe({ args.topic_s })
   mqtt_client:destroy()
 else
   print(error_message)
