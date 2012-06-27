@@ -108,10 +108,12 @@ or any other MQTT server
 - Install [Lua programming language](http://www.lua.org/download.html)
 - Install [LuaRocks package manager](http://luarocks.org/en/Download)
 - Install [LuaSocket](http://w3.impa.br/~diego/software/luasocket)
+- Install [PenLight](https://github.com/stevedonovan/Penlight)
 
 On Linux, Lua and LuaRocks can be installed via your Linux distribution
-package manager.  On Mac OS X, Lua and LuaRocks can be installed via
-Darwin ports.  After that, LuaSocket can be installed via LuaRocks.
+package manager.
+On Mac OS X, Lua and LuaRocks can be installed viarDarwin ports.
+After that, LuaSocket and PenLight can be installed via LuaRocks.
 
 Lua MQTT client library as a LuaRock ...
 
@@ -126,6 +128,7 @@ Usage
 -----
 The Lua MQTT client library comes with three command line utilites,
 which are useful for testing the library and acting as example code.
+These utilities require that Lua Penlight has been installed.
 
 #### mqtt\_test: Test publish and receive messages on different topics
 
@@ -150,7 +153,7 @@ This command publishes a single message and then exits.
 Only the _--topic_ and _--message_ parameters are required.
 
       -d,--debug                               Verbose console logging
-      -h,--host         (default localhost)    MQTT server hostname
+      -H,--host         (default localhost)    MQTT server hostname
       -i,--id           (default MQTT client)  MQTT client identifier
       -m,--message      (string)               Message to be published
       -p,--port         (default 1883)         MQTT server port number
@@ -170,7 +173,7 @@ Use ^C (or similar) to stop execution.
 Only the _--topic_ parameter is required.
 
       -d,--debug                               Verbose console logging
-      -h,--host         (default localhost)    MQTT server hostname
+      -H,--host         (default localhost)    MQTT server hostname
       -i,--id           (default MQTT client)  MQTT client identifier
       -k,--keepalive    (default 60)           Send MQTT PING period (seconds)
       -p,--port         (default 1883)         MQTT server port number
