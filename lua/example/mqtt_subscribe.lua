@@ -40,12 +40,12 @@ end
 print("[mqtt_subscribe v0.2 2012-06-01]")
 
 if (not is_openwrt()) then require("luarocks.require") end
-require("lapp")
+local lapp = require("pl.lapp")
 
 local args = lapp [[
   Subscribe to a specified MQTT topic
   -d,--debug                                Verbose console logging
-  -h,--host          (default localhost)    MQTT server hostname
+  -H,--host          (default localhost)    MQTT server hostname
   -i,--id            (default mqtt_sub)     MQTT client identifier
   -k,--keepalive     (default 60)           Send MQTT PING period (seconds)
   -p,--port          (default 1883)         MQTT server port number

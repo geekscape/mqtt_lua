@@ -25,11 +25,11 @@ end
 -- ------------------------------------------------------------------------- --
 
 if (not is_openwrt()) then require("luarocks.require") end
-require("lapp")
+local lapp = require("pl.lapp")
 
 local args = lapp [[
   Subscribe to topic1 and publish all messages on topic2
-  -h,--host   (default localhost)   MQTT server hostname
+  -H,--host   (default localhost)   MQTT server hostname
   -i,--id     (default example_02)  MQTT client identifier
   -p,--port   (default 1883)        MQTT server port number
   -s,--sleep  (default 5.0)         Sleep time between commands
