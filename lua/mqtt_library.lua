@@ -730,7 +730,7 @@ function MQTT.client:subscribe(                                   -- Public API
   for index, topic in ipairs(topics) do
     MQTT.Utility.debug("MQTT.client:subscribe(): " .. topic)
     message = message .. MQTT.client.encode_utf8(topic)
-    message = message .. string.char(2)  -- QOS level 0
+    message = message .. string.char(0)  -- QOS level 0
   end
 
   self:message_write(MQTT.message.TYPE_SUBSCRIBE, message)
