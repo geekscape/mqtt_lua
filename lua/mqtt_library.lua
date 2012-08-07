@@ -575,7 +575,7 @@ function MQTT.client:parse_message_publish(                     -- Internal API
 -- Handle optional Message Identifier, for QOS levels 1 and 2
 -- TODO: Enable Subscribe with QOS and deal with PUBACK, etc.
 
-    local qos = MQTT.Utility.shift_left(message_type_flags, 1) % 3
+    local qos = MQTT.Utility.shift_right(message_type_flags, 1) % 3
 
     if (qos > 0) then
       local message_id = string.byte(message, index) * 256
