@@ -579,7 +579,7 @@ function MQTT.client:parse_message_publish(                     -- Internal API
     if (qos > 0) then
       local message_id = string.byte(message, index) * 256
       local byte_ret = string.byte(message, index + 1)
-	  if byte_ret ~= nil then message_id = message_id + byte_ret end
+      if byte_ret ~= nil then message_id = message_id + byte_ret end
       index = index + 2
     end
 
